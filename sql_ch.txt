@@ -1,0 +1,192 @@
+Unique Users Per Client Per Month id 2024
+
+Write a query that returns the number of unique users per client per month (easy)
+
+Table: fact_events
+
+fact_events
+
+id:
+int
+time_id:
+datetime
+user_id:
+varchar
+customer_id:
+varchar
+client_id:
+varchar
+event_type:
+varchar
+event_id:
+int
+
+select count(distinct user_id) as number_uniq, client_id, EXTRACT(month from time_id) as month
+from fact_events
+group by client_id, month
+
+
+------------------------------------------------------------------------
+
+First Name's Containing the Letter 'a'  easy
+
+Find all workers whose first name contains the letter 'a'. Output all columns for such workers.
+
+Table: worker
+
+worker
+Preview
+worker_id:
+int
+first_name:
+varchar
+last_name:
+varchar
+salary:
+int
+joining_date:
+datetime
+department:
+varchar
+
+select *
+from worker
+where lower(first_name) LIKE '%a%'
+
+------------------------------------------------------------------------
+
+
+Submission Types (B) id2002  easy
+Write a query that returns the user ID of all users that have created at least one ‘Refinance’ submission 
+and at least one ‘InSchool’ submission.
+
+Table: loans
+
+id:
+int
+user_id:
+int
+created_at:
+datetime
+status:
+varchar
+type:
+varchar
+
+select user_id
+from loans
+where type IN ('Refinance','InSchool')
+group by user_id
+having count(distinct type) >=2
+
+
+
+SELECT user_id
+FROM loans
+WHERE type = 'Refinance'
+INTERSECT
+SELECT user_id
+FROM loans
+WHERE type = 'InSchool'
+
+------------------------------------------------------------------------
+
+
+Find all companies with more than 10 employees  easy
+google_adwords_earnings
+
+Preview
+business_type:
+varchar
+n_employees:
+int
+year:
+int
+adwords_earnings:
+int
+
+select *
+from google_adwords_earnings
+where n_employees > 10
+
+------------------------------------------------------------------------
+
+Number Of Bathrooms And Bedrooms easy
+
+Find the average number of bathrooms and bedrooms for each city’s property types. 
+Output the result along with the city name and the property type.
+
+Table: airbnb_search_details
+
+airbnb_search_details
+
+Unnamed: 0: int
+id: int
+price: float
+property_type:
+varchar
+room_type:
+varchar
+amenities:
+varchar
+accommodates:
+int
+bathrooms:
+int
+bed_type:
+varchar
+cancellation_policy:
+varchar
+cleaning_fee:
+bool
+city:
+varchar
+host_identity_verified:
+varchar
+host_response_rate:
+varchar
+host_since:
+datetime
+neighbourhood:
+varchar
+number_of_reviews:
+int
+review_scores_rating:
+float
+zipcode:
+int
+bedrooms:
+int
+beds:
+int
+
+select city, property_type, AVG(bathrooms) as avg_bathrooms, AVG(bedrooms) as avg_bedrooms
+from airbnb_search_details
+group by city, property_type
+
+------------------------------------------------------------------------
+
+Number of Shipments Per Month id2056 easy
+
+Write a query that will calculate the number of shipments per month. 
+The unique key for one shipment is a combination of shipment_id and sub_id. 
+Output the year_month in format YYYY-MM and the number of shipments in that month.
+
+postgresql
+
+amazon_shipment
+
+shipment_id:
+int
+sub_id:
+int
+weight:
+int
+shipment_date:
+datetime
+
+
+select to_char(shipment_date, 'YYYY-MM') AS year_month,
+       count(distinct (shipment_id, sub_id))
+from amazon_shipment
+group by year_month
