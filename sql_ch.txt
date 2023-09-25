@@ -1,3 +1,5 @@
+09/21
+
 Unique Users Per Client Per Month id 2024
 
 Write a query that returns the number of unique users per client per month (easy)
@@ -190,3 +192,136 @@ select to_char(shipment_date, 'YYYY-MM') AS year_month,
        count(distinct (shipment_id, sub_id))
 from amazon_shipment
 group by year_month
+
+
+
+
+------------------------------------------------------------------------
+
+
+09/22 
+
+Employees With First Names 'Vipul' or 'Satish' or Last Name Containing a 'c'
+
+Employees Without First Names 'Vipul' or 'Satish' or Last Name Containing a 'c'
+
+
+worker
+Preview
+worker_id:
+int
+first_name:
+varchar
+last_name:
+varchar
+salary:
+int
+joining_date:
+datetime
+department:
+varchar
+
+select *
+from worker
+WHERE first_name in ('Vipul','Satish') or lower(last_name) LIKE '%c%'
+
+select *
+from worker
+WHERE first_name not in ('Vipul','Satish') and lower(last_name) NOT LIKE '%c%'
+
+------------------------------------------------------------------------
+
+Find all athletes who were older than 40 years when they won either Bronze or Silver medals
+
+olympics_athletes_events
+Preview
+id:
+int
+name:
+varchar
+sex:
+varchar
+age:
+float
+height:
+float
+weight:
+datetime
+team:
+varchar
+noc:
+varchar
+games:
+varchar
+year:
+int
+season:
+varchar
+city:
+varchar
+sport:
+varchar
+event:
+varchar
+medal:
+varchar
+
+select name
+from olympics_athletes_events
+WHERE age > 40 and medal IN ('Bronze', 'Silver')
+
+------------------------------------------------------------------------
+
+
+Find all facilities with the zip code 90049, 90034, or 90045.
+
+los_angeles_restaurant_health_inspections
+Preview
+serial_number:
+varchar
+activity_date:
+datetime
+facility_name:
+varchar
+score:
+int
+grade:
+varchar
+service_code:
+int
+service_description:
+varchar
+employee_id:
+varchar
+facility_address:
+varchar
+facility_city:
+varchar
+facility_id:
+varchar
+facility_state:
+varchar
+facility_zip:
+varchar
+owner_id:
+varchar
+owner_name:
+varchar
+pe_description:
+varchar
+program_element_pe:
+int
+program_name:
+varchar
+program_status:
+varchar
+record_id:
+varcha
+
+select DISTINCT(facility_name)
+from los_angeles_restaurant_health_inspections
+where facility_zip IN ('90049','90034','90045')
+
+------------------------------------------------------------------------
+
+
