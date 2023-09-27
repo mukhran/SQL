@@ -324,4 +324,129 @@ where facility_zip IN ('90049','90034','90045')
 
 ------------------------------------------------------------------------
 
+09/26
+Wine Variety Revenues medium
+Find the total revenue made by each region from each variety of wine in that region. Output the region, variety, and total revenue.
+
+
+Take into calculation both region_1 and region_2. Remove the duplicated rows where  region, price and variety are exactly the same.
+
+SELECT region, SUM(price), variety
+FROM 
+    (SELECT region_1 as region,
+    price,
+    variety
+    FROM winemag_p1
+
+    UNION
+    SELECT region_2 as region,
+    price,
+    variety
+    FROM winemag_p1) as temp
+WHERE region IS NOT NULL AND price IS NOT NULL 
+GROUP BY region, variety
+
+-----------------------------------------------------------------------
+
+Total wine revenue medium
+
+You have a dataset of wines. Find the total revenue made by each winery and variety that always have at least 90 points. Meaning that in each row for the winery, variety pair number of points should be at least 90 in order for that pair to be considered in the calculation.
+
+
+Output the winery and variety along with the corresponding total revenue. Order records by the winery in ascending order and total revenue in descending order.
+
+SELECT winery, variety, SUM(price) as revenue
+FROM winemag_p1
+GROUP by winery, variety
+HAVING MIN(points) >= 90
+ORDER BY winery ASC, revenue DESC
+
+------------------------------------------------------------------------------
+
+Calculate the total revenue from each customer in March 2019. Include only customers who were active in March 2019.
+
+
+Output the revenue along with the customer id and sort the results based on the revenue in descending order.
+
+id:
+int
+cust_id:
+int
+order_date:
+datetime
+order_details:
+varchar
+total_order_cost:
+int
+
+select SUM(total_order_cost) as revenue, cust_id
+from orders
+where order_date BETWEEN '2019-03-01' AND '2019-03-31'
+group by cust_id
+
+--------------------------------------------------------------------------
+
+
+Find the search details for villas and houses with wireless internet access. easy
+
+price:
+float
+property_type:
+varchar
+room_type:
+varchar
+amenities:
+varchar
+accommodates:
+int
+bathrooms:
+int
+bed_type:
+varchar
+cancellation_policy:
+varchar
+cleaning_fee:
+bool
+city:
+varchar
+host_identity_verified:
+varchar
+host_response_rate:
+varchar
+host_since:
+datetime
+neighbourhood:
+varchar
+number_of_reviews:
+int
+review_scores_rating:
+float
+zipcode:
+int
+bedrooms:
+int
+beds:
+int
+
+select * 
+from airbnb_search_details
+where amenities  LIKE '%Wireless Internet%' AND property_type in ('House', 'Villa')
+
+-----------------------------------------------------------------------------------------
+
+
+Find the average score for grades A, B, and C. easy
+Output the results along with the corresponding grade (ex: 'A', avg(score)).
+
+Table: los_angeles_restaurant_health_inspections
+
+select grade, AVG(score)
+from los_angeles_restaurant_health_inspections
+where grade in ('A', 'B', 'C')
+group by grade
+
+------------------------------------------------------------------------------------------
+
+
+
 
