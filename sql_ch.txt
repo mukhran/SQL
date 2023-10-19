@@ -447,6 +447,230 @@ group by grade
 
 ------------------------------------------------------------------------------------------
 
+09/27
+
+Find the last time each bike was in use. Output both the bike number and the date-timestamp of the bike's last use 
+(i.e., the date-time the bike was returned). Order the results by bikes that were most recently used.
+
+duration:
+varchar
+duration_seconds:
+int
+start_time:
+datetime
+start_station:
+varchar
+start_terminal:
+int
+end_time:
+datetime
+end_station:
+varchar
+end_terminal:
+int
+bike_number:
+varchar
+rider_type:
+varchar
+id:
+int
+
+select bike_number, MAX(end_time) as last_used
+from dc_bikeshare_q1_2012
+group by bike_number
+order by last_used DESC
+
+------------------------------------------------------------------------------------------
+10/18
+Calculate the average session duration for each session type?
+
+user_id:
+int
+session_start:
+datetime
+session_end:
+datetime
+session_id:
+int
+session_type:
+varchar
+
+SELECT DISTINCT session_type,
+       avg(session_end -session_start) OVER (PARTITION BY session_type)
+       AS duration
+FROM twitch_sessions
+
+-----------------------------------------------------------------------------------------
+
+Count the number of user events performed by MacBookPro users.
+Output the result along with the event name.
+Sort the result based on the event count in the descending order.
+
+Table: playbook_events
+
+user_id:
+int
+occurred_at:
+datetime
+event_type:
+varchar
+event_name:
+varchar
+location:
+varchar
+device:
+varchar
+
+WINDOW FUNCTION
+
+SELECT distinct event_name, 
+       COUNT(*) OVER (PARTITION BY event_name) as number_events
+FROM playbook_events
+WHERE device = 'macbook pro'
+ORDER BY number_events DESC;
+
+--------------------------------------------------------------------------------
+
+
+
+
+
+select name, review_count
+from  yelp_business
+where stars = 1
+group by review_count, name
+
+
+
+--------------------------------------------------------------------------------
+Find the average number of stars for each state.
+Output the state name along with the corresponding average number of stars.
+
+Table: yelp_business
+
+WINDOW FUNCTION
+select distinct state,
+        avg(stars) over(partition by state) as average_star_by_state
+from yelp_business
+
+
+select state, avg(stars)
+from yelp_business
+group by state
+
+-------------------------------------------------------------------------
+
+Compare each employee's salary with the average salary of the corresponding department.
+Output the department, first name, and salary of employees along with the average salary of that department.
+
+id:
+int
+first_name:
+varchar
+last_name:
+varchar
+age:
+int
+sex:
+varchar
+employee_title:
+varchar
+department:
+varchar
+salary:
+int
+target:
+int
+bonus:
+int
+email:
+varchar
+city:
+varchar
+address:
+varchar
+manager_id:
+int
+
+
+select department, first_name, salary,
+    avg(salary) over(partition by department) as averag_by_department
+from employee
+
+---------------------------------------------------------------------------
+
+
+Find the email activity rank for each user. Email activity rank is defined by the total number of emails sent. The user with the highest number of emails sent will have a rank of 1, and so on. Output the user, total emails, and their activity rank. Order records by the total emails in descending order. Sort users with the same number of emails in alphabetical order.
+In your rankings, return a unique value (i.e., a unique rank) even if multiple users have the same number of emails. For tie breaker use alphabetical order of the user usernames.
+
+Table: google_gmail_emails
+
+
+id:
+int
+from_user:
+varchar
+to_user:
+varchar
+day:
+int
+
+SELECT from_user,
+       COUNT(*) as email_sent,
+       ROW_NUMBER() OVER (ORDER BY COUNT(*) desc,from_user asc) 
+FROM google_gmail_emails
+GROUP BY from_user
+
+---------------------------------------------------------------------------------
+
+time from 10th runner
+CTE + Window function
+
+In a marathon, gun time is counted from the moment of the formal start of the race while net time is counted from the moment a runner crosses a starting line. Both variables are in seconds.
+
+
+How much net time separates Chris Doe from the 10th best net time (in ascending order)? Avoid gaps in the ranking calculation. Output absolute net time difference.
+
+Table: marathon_male
+
+place:
+int
+div_tot:
+varchar
+num:
+int
+person_name:
+varchar
+age:
+int
+hometown:
+varchar
+pace:
+int
+gun_time:
+int
+net_time:
+int
+
+
+with chris_doe as
+    (select net_time
+    from marathon_male
+    where person_name = 'Chris Doe'
+    ),
+    tenth_runner AS
+    (select distinct net_time
+        from (
+            select net_time,
+                dense_rank() over(order by net_time) as net_time_rank
+            from marathon_male) as a
+        where net_time_rank = 10
+            
+    )
+select abs(t.net_time - c.net_time) difference
+from tenth_runner t
+cross join chris_doe c
+    
 
 
 
