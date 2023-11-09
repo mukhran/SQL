@@ -671,6 +671,240 @@ select abs(t.net_time - c.net_time) difference
 from tenth_runner t
 cross join chris_doe c
     
+-----------------------------------------------------------------------------------
+
+10/20
+
+Rank guests based on their ages.
+Output the guest id along with the corresponding rank.
+Order records by the age in descending order.
+
+Table: airbnb_guests
+
+guest_id:
+int
+nationality:
+varchar
+gender:
+varchar
+age:
+int
+
+select guest_id,
+    rank() over(order by age DESC) as rnk
+
+from airbnb_guests
+
+-----------------------------------------------------------------------------------
+
+ information technology department is looking for information on employees' most recent logins.
 
 
+The output should include all information related to each employee's most recent login.
 
+Table: worker_logins
+
+id:
+int
+worker_id:
+int
+login_timestamp:
+datetime
+ip_address:
+varchar
+country:
+varchar
+region:
+varchar
+city:
+varchar
+device_type:
+varchar
+
+WITH cte AS
+  (SELECT worker_id,
+          login_timestamp,
+          RANK() OVER(PARTITION BY worker_id
+                      ORDER BY login_timestamp DESC) AS rnk
+   FROM worker_logins)
+SELECT w.*
+FROM worker_logins w
+JOIN cte c ON w.worker_id = c.worker_id
+WHERE c.rnk = 1 AND w.login_timestamp = c.login_timestamp
+
+----------------------------------------------------------------------------------
+
+Get the job titles of the 3 employees who received the most overtime pay
+Output the job title of selected records.
+
+Table: sf_public_salaries
+
+id:
+int
+employeename:
+varchar
+jobtitle:
+varchar
+basepay:
+float
+overtimepay:
+float
+otherpay:
+float
+benefits:
+float
+totalpay:
+float
+totalpaybenefits:
+float
+year:
+int
+notes:
+datetime
+agency:
+varchar
+status:
+varchar
+
+
+with cte as
+    (
+    select jobtitle, overtimepay,
+        dense_rank() over(order by overtimepay desc) rnk
+    from sf_public_salaries
+    )
+select jobtitle, overtimepay
+from cte
+where rnk <=3
+
+----------------------------------------------------------------------
+
+
+find the shipment_id and weight of the third heaviest shipment.
+Output the shipment_id, and total_weight for that shipment_id.
+In the event of a tie, do not skip ranks.
+
+Table: amazon_shipment
+
+shipment_id:
+int
+sub_id:
+int
+weight:
+int
+shipment_date:
+datetime
+
+with cte as(
+    select shipment_id,
+        sum(weight) as total_weight,
+        dense_rank() over(order by sum (weight)desc) rnk
+    from amazon_shipment
+    group by 1
+    )
+select shipment_id, total_weight
+from cte
+where rnk = 3
+
+-----------------------------------------------------------------------------
+
+Find the top 10 ratings quarterbacks received. Output the quarterback along with the corresponding rating.
+
+Table: qbstats_2015_2016
+
+with cte as (
+    select 
+        qb,rate,
+        dense_rank() over(order by rate DESC) rnk
+    from qbstats_2015_2016
+    )
+select qb, rate
+from cte
+where rnk <=10
+
+-----------------------------------------------------------------------------------------
+
+
+10/31
+Find the 3 most profitable companies in the entire world.
+Output the result along with the corresponding company name.
+Sort the result based on profits in descending order.
+
+Table: forbes_global_2010_2014
+
+  select company, profits
+  from (select company, profits,
+        rank() over(order by profits desc) as rnk
+        from forbes_global_2010_2014) as subq 
+    where rnk <4
+
+SELECT company, profits
+FROM forbes_global_2010_2014
+ORDER BY profits DESC
+LIMIT 3;
+
+If there are ties in profits, this query will only return one of the tied companies. It won't necessarily give you the top three distinct companies by profit.
+
+-----------------------------------------------------------------------------------------
+
+11/8
+3 easy
+
+Find the most dangerous places in SF based on the crime count per address and district combination.
+Output the number of incidents alongside the corresponding address and the district.
+Order records based on the number of occurrences in descending order.
+
+select address, pd_district, count(incidnt_num) as mun_of_incidents
+from sf_crime_incidents_2014_01
+group by address, pd_district
+order by mun_of_incidents DESC
+
+incidnt_num:
+float
+category:
+varchar
+descript:
+varchar
+day_of_week:
+varchar
+date:
+datetime
+time:
+datetime
+pd_district:
+varchar
+resolution:
+varchar
+address:
+varchar
+lon:
+float
+lat:
+float
+location:
+varchar
+id:
+int
+-----------------------------------------------------------------------------------------
+
+How many accounts have performed a login in the year 2016?
+select count(distinct account_id) as logins
+from product_logins
+where login_date between '2016-01-01' AND '2016-12-31'
+
+_________________________________________________________________________________________
+
+
+workers with the highest salary
+You have been asked to find the job titles of the highest-paid employees.
+
+
+Your output should include the highest-paid title or multiple titles with the same salary.
+
+SELECT
+    worker_title AS best_paid_title 
+FROM worker
+JOIN title 
+ON worker_id = worker_ref_id
+WHERE salary=(SELECT MAX(salary) FROM worker)
+----------------------------------------------------------------------------------------
