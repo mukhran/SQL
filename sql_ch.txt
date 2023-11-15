@@ -908,3 +908,171 @@ JOIN title
 ON worker_id = worker_ref_id
 WHERE salary=(SELECT MAX(salary) FROM worker)
 ----------------------------------------------------------------------------------------
+
+
+Find contract starting dates of the top 5 most paid Lyft drivers. Consider only drivers who are still working with Lyft.
+index:
+int
+start_date:
+datetime
+end_date:
+datetime
+yearly_salary:
+int
+
+SELECT start_date
+FROM
+  (SELECT start_date,
+          rank() OVER (
+                       ORDER BY yearly_salary DESC)
+   FROM lyft_drivers
+   WHERE end_date IS NULL) sq
+WHERE rank <=5
+
+----------------------------------------------------------------------------------------
+
+Find all records from days when the number of distinct users receiving emails was greater than the number of distinct users sending emails
+
+google_gmail_emails
+
+id:
+int
+from_user:
+varchar
+to_user:
+varchar
+day:
+int
+
+SELECT *
+FROM google_gmail_emails
+WHERE day IN (
+    SELECT day
+    FROM google_gmail_emails
+    GROUP BY day
+    HAVING COUNT(DISTINCT to_user) > COUNT(DISTINCT from_user)
+);
+
+
+----------------------------------------------------------------------------------------
+
+Find the total number of available beds per hosts' nationality.
+Output the nationality along with the corresponding total number of available beds.
+Sort records by the total available beds in descending order.
+
+Tables: airbnb_apartments, airbnb_hosts
+
+select ah.nationality, sum(ap.n_beds)
+from airbnb_apartments as ap
+inner join airbnb_hosts as ah
+on ap.host_id  = ah.host_id
+group by ah.nationality
+order by sum(ap.n_beds) desc
+
+airbnb_apartments
+
+host_id:
+int
+apartment_id:
+varchar
+apartment_type:
+varchar
+n_beds:
+int
+n_bedrooms:
+int
+country:
+varchar
+city:
+varchar
+
+
+airbnb_hosts
+
+
+host_id:
+int
+nationality:
+varchar
+gender:
+varchar
+age:
+int
+
+----------------------------------------------------------------------------------------
+
+You're given a dataset of searches for properties on Airbnb. For simplicity, let's say that each search result (i.e., each row) represents a unique host. Find the city with the most amenities across all their host's properties. Output the name of the city.
+
+airbnb_search_details
+
+id:
+int
+price:
+float
+property_type:
+varchar
+room_type:
+varchar
+amenities:
+varchar
+accommodates:
+int
+bathrooms:
+int
+bed_type:
+varchar
+cancellation_policy:
+varchar
+cleaning_fee:
+bool
+city:
+varchar
+host_identity_verified:
+varchar
+host_response_rate:
+varchar
+host_since:
+datetime
+neighbourhood:
+varchar
+number_of_reviews:
+int
+review_scores_rating:
+float
+zipcode:
+int
+bedrooms:
+int
+beds:
+int
+
+select city
+from airbnb_search_details
+group by city
+order by sum(length(amenities)) desc
+limit 1
+
+_________________________________________________________________________________-
+
+Find hotels in the Netherlands that got complaints from guests about room dirtiness (word "dirty" in its negative review). Output all the columns in your results
+
+Table: hotel_reviews
+
+select *
+from hotel_reviews
+where hotel_address ILIKE '%Netherlands%' and negative_review ILIKE '%dirty%'
+
+----------------------------------------------------------------------------------------
+
+Write a query that calculates the difference between the highest salaries found in the marketing and engineering departments. Output just the absolute difference in salaries.
+
+SELECT
+  ABS((SELECT max(salary)
+   FROM db_employee emp
+   JOIN db_dept dept ON emp.department_id = dept.id
+   WHERE department = 'marketing') -
+  (SELECT max(salary)
+   FROM db_employee emp
+   JOIN db_dept dept ON emp.department_id = dept.id
+   WHERE department = 'engineering')) AS salary_difference
+
